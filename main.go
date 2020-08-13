@@ -1,9 +1,16 @@
 package main
 
 import (
-	"github.com/Zaysevkun/RESTful-API/models"
+	"./api"
+	"log"
+	"os"
 )
 
 func main() {
-	server
+	config := api.NewConfig()
+	s := api.New(config)
+	err := s.Start()
+	if err != nil {
+		log.Fatal(err)
+	}
 }
