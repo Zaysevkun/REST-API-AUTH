@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/Zaysevkun/RESTful-API/db"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -9,9 +10,10 @@ import (
 )
 
 type ApiServer struct {
-	config *Config
-	logger *logrus.Logger
-	router *mux.Router
+	config  *Config
+	logger  *logrus.Logger
+	router  *mux.Router
+	storage *db.Storage
 }
 
 func New(config *Config) *ApiServer {
@@ -28,6 +30,9 @@ func (s *ApiServer) Start() error {
 	}
 
 	s.configureRouter()
+	if err := s.configureStorage(); err != nil {
+		return err
+	}
 
 	s.logger.Info("starting api server")
 	return http.ListenAndServe(s.config.Port, s.router)
@@ -62,6 +67,15 @@ func (s *ApiServer) cofigureLogger() error {
 
 func (s *ApiServer) configureRouter() {
 	s.router.HandleFunc("/hello", s.HandleHello())
+}
+
+func (s *ApiServer) configureStorage() error {
+	db := db.New(db.NewConfig())
+	if err := db.Open(); err != nil {
+		return err
+	}
+	s.storage = db
+	return nil
 }
 
 func (s *ApiServer) HandleHello() http.HandlerFunc {
