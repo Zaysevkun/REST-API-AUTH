@@ -1,4 +1,4 @@
-package db
+package storage
 
 import (
 	"database/sql"
@@ -6,8 +6,9 @@ import (
 )
 
 type Storage struct {
-	config *Config
-	db     *sql.DB
+	config         *Config
+	db             *sql.DB
+	userRepository *UserRepository
 }
 
 func New(config *Config) *Storage {
@@ -33,4 +34,16 @@ func (st *Storage) Open() error {
 
 func (st *Storage) Close() {
 	st.db.Close()
+}
+
+func (st *Storage) User() *UserRepository {
+	if st.userRepository != nil {
+		return st.userRepository
+	}
+
+	st.userRepository = &UserRepository{
+		storage: st,
+	}
+
+	return st.userRepository
 }

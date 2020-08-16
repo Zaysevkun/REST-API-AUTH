@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/Zaysevkun/RESTful-API/db"
+	"github.com/Zaysevkun/RESTful-API/storage"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -13,7 +13,7 @@ type ApiServer struct {
 	config  *Config
 	logger  *logrus.Logger
 	router  *mux.Router
-	storage *db.Storage
+	storage *storage.Storage
 }
 
 func New(config *Config) *ApiServer {
@@ -70,7 +70,7 @@ func (s *ApiServer) configureRouter() {
 }
 
 func (s *ApiServer) configureStorage() error {
-	db := db.New(db.NewConfig())
+	db := storage.New(storage.NewConfig())
 	if err := db.Open(); err != nil {
 		return err
 	}
