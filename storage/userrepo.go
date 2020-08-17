@@ -1,12 +1,22 @@
 package storage
 
-import "github.com/Zaysevkun/RESTful-API/model"
+import (
+	"github.com/Zaysevkun/RESTful-API/model"
+)
 
 type UserRepository struct {
 	storage *Storage
 }
 
 func (r *UserRepository) Create(u *model.User) (*model.User, error) {
+	if err := u.Validate(); err != nil {
+		return nil, err
+	}
+
+	if err := u.BeforeCreate(); err != nil {
+		return nil, err
+	}
+
 	if err := r.storage.db.QueryRow(
 		"INSERT INTO users (email, encrypted_password) VALUES ($1, $2) RETURNING id",
 		u.Email,
