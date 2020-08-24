@@ -7,13 +7,14 @@ import (
 )
 
 func main() {
+	// connect .env file and read config variables
 	if err := godotenv.Load(".env"); err != nil {
 		log.Print("No .env file found")
 	}
 	config := api.NewConfig()
-	s := api.New(config)
-	err := s.Start()
-	if err != nil {
+
+	// start server
+	if err := api.Start(config); err != nil {
 		log.Fatal(err)
 	}
 }

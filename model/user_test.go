@@ -6,6 +6,7 @@ import (
 	"testing"
 )
 
+// TestBeforeCreate
 func TestBeforeCreate(t *testing.T) {
 	u := model.TestUser(t)
 	err := u.BeforeCreate()
@@ -14,6 +15,7 @@ func TestBeforeCreate(t *testing.T) {
 	assert.NotEmpty(t, u.EncryptedPassword)
 }
 
+// Table tests for validation(sexy)
 func TestUser_Validate(t *testing.T) {
 	testCases := []struct {
 		name    string

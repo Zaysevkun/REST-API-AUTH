@@ -1,33 +1,34 @@
-package storage
+package sqlstorage
 
 import (
+	"database/sql"
 	"github.com/Zaysevkun/RESTful-API/model"
+	"github.com/Zaysevkun/RESTful-API/storage"
 )
 
+// UserRepository
 type UserRepository struct {
 	storage *Storage
 }
 
-func (r *UserRepository) Create(u *model.User) (*model.User, error) {
+// Create new users table colon in db
+func (r *UserRepository) Create(u *model.User) error {
 	if err := u.Validate(); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := u.BeforeCreate(); err != nil {
-		return nil, err
+		return err
 	}
 
-	if err := r.storage.db.QueryRow(
+	return r.storage.db.QueryRow(
 		"INSERT INTO users (email, encrypted_password) VALUES ($1, $2) RETURNING id",
 		u.Email,
 		u.EncryptedPassword,
-	).Scan(&u.Id); err != nil {
-		return nil, err
-	}
-
-	return u, nil
+	).Scan(&u.Id)
 }
 
+//find user in db by email
 func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 	u := &model.User{}
 	if err := r.storage.db.QueryRow("SELECT  id, email, encrypted_password FROM  users WHERE  email = $1",
@@ -36,8 +37,8 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 		&u.Id,
 		&u.Email,
 		&u.EncryptedPassword,
-	); err != nil {
-		return nil, err
+	); err == sql.ErrNoRows {
+		return nil, storage.ErrRecordNotFound
 	}
 
 	return u, nil

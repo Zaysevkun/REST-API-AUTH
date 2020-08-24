@@ -1,4 +1,4 @@
-package storage_test
+package sqlstorage_test
 
 import (
 	"os"
@@ -9,10 +9,11 @@ var (
 	databaseURL string
 )
 
+// get test db adress from .env
 func TestMain(m *testing.M) {
 	databaseURL = os.Getenv("DATABASE_URL")
 	if databaseURL == "" {
-		databaseURL = "host=localhost user=postgres dbname=rest_api_test sslmode=disable password=4256"
+		databaseURL = "host=localhost user=postgres dbname=rest_api sslmode=disable password=4256"
 	}
 
 	os.Exit(m.Run())
