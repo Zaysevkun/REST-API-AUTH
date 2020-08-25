@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"github.com/Zaysevkun/RESTful-API/storage/sqlstorage"
+	"github.com/gorilla/sessions"
 	"net/http"
 )
 
@@ -15,7 +16,8 @@ func Start(config *Config) error {
 
 	defer db.Close()
 	storage := sqlstorage.New(db)
-	srv := NewServer(storage)
+	sessionsStore := sessions.NewCookieStore([]byte(config.CookieKey))
+	srv := NewServer(storage, sessionsStore)
 
 	return http.ListenAndServe(config.Port, srv)
 }
