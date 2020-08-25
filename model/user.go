@@ -8,10 +8,10 @@ import (
 
 // this struct corresponds with "users" table from db
 type User struct {
-	Id                int
-	Email             string
-	Password          string // not present in db
-	EncryptedPassword string
+	Id                int    `json:"id"`
+	Email             string `json:"email"`
+	Password          string `json:"password,omitempty"`
+	EncryptedPassword string `json:"-"`
 }
 
 // validate information before passing it to db(using ozzo-validation)
@@ -32,6 +32,11 @@ func (u *User) BeforeCreate() error {
 		u.EncryptedPassword = enc
 	}
 	return nil
+}
+
+// hide password for safe responding
+func (u *User) Sanitize() {
+	u.Password = ""
 }
 
 // encrypt string using bcrypt
