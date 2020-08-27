@@ -2,7 +2,6 @@ package teststorage_test
 
 import (
 	"github.com/Zaysevkun/RESTful-API/model"
-	"github.com/Zaysevkun/RESTful-API/storage"
 	"github.com/Zaysevkun/RESTful-API/storage/teststorage"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -19,15 +18,18 @@ func TestUserRepository_Create(t *testing.T) {
 // TestUserRepository_FindByEmail
 func TestUserRepository_FindByEmail(t *testing.T) {
 	s := teststorage.New()
-	email := "user@example.org"
-	_, err := s.User().FindByEmail(email)
-	assert.EqualError(t, err, storage.ErrRecordNotFound.Error())
-
 	u := model.TestUser(t)
-	u.Email = email
 	s.User().Create(u)
+	u, err := s.User().FindByEmail(u.Email)
+	assert.NoError(t, err)
+	assert.NotNil(t, u)
+}
 
-	u, err = s.User().FindByEmail(email)
+func TestUserRepository_Find(t *testing.T) {
+	s := teststorage.New()
+	u := model.TestUser(t)
+	s.User().Create(u)
+	u, err := s.User().Find(u.Id)
 	assert.NoError(t, err)
 	assert.NotNil(t, u)
 }
